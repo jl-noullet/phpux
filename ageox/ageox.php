@@ -1,12 +1,11 @@
 <?php
-$server = 'mysql5-27';
+// $server = 'mysql5-27';
+$server = 'sourcecojln.mysql.db';
 $base = 'sourcecojln';
 $user = 'sourcecojln';
 $pass = 'xxxxxxxx';
-$conn = mysql_connect( $server, $user, $pass );
-if (!$conn) { die("echec connexion serveur"); }
-mysql_select_db($base) or die('erreur selection base de donnees');
-// echo "connected<br/>";
+$conn = mysqli_connect( $server, $user, $pass, $base );
+if (!$conn) { die("echec connexion serveur et base"); }
 
 // initialiser geoip
 require_once '../geoip/geoip2.phar';
@@ -16,15 +15,19 @@ $reader = new Reader('../geoip/GeoLite2-City.mmdb');
 
 $sqlrequest = "SELECT * FROM ssv1 ORDER BY date DESC;";
 
-$result = mysql_query( $sqlrequest );
+$result = $conn->query( $sqlrequest );
 if	(!$result) echo "erreur base de donnees " . $sqlrequest;
 else	{
 	echo '<table border="1" cellpadding="8">';
-	while	( $row = mysql_fetch_assoc($result) )
+	while	( $row = mysqli_fetch_assoc($result) )
 		{
 		echo '<tr>';
-		foreach	( $row as $elem )
-			echo '<td>' . $elem . '</td>';
+		// foreach	( $row as $elem )
+		//		echo '<td>' . $elem . '</td>';
+		echo '<td>' . $row[date] . '</td>';
+		echo '<td>' . $row[ip] . '</td>';
+		echo '<td>' . $row[v] . '</td>';
+		echo '<td>' . $row[agent] . '</td>';
 		// on a l'essentiel, reste a faire la geoloc
 		$ip = $row[ip];
 		if	( !isset( $geoloc[$ip] ) )
